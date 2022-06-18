@@ -1,8 +1,8 @@
-# Inventory
+# Orders
 
 ## Solution
 
-- The solution has 5 projects
+- The solution has 8 projects
 - Al projects are .Net 6
 
 ### Projects: 
