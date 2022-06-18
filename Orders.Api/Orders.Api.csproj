@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BuildingBlocks\EeventBusRabbitMQ\EeventBusRabbitMQ.csproj" />
+    <ProjectReference Include="..\BuildingBlocks\EeventBusRabbitMQ\EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\Orders.App\Orders.App.csproj" />
     <ProjectReference Include="..\Orders.Domain\Orders.Domain.csproj" />
     <ProjectReference Include="..\Orders.Infra\Orders.Infra.csproj" />
