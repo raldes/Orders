@@ -3,13 +3,15 @@ using Orders.Domain.Entities;
 using MediatR;
 using Orders.Domain.Repositories;
 using Orders.Infra.Database.Extensions;
-using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore.Storage;
+using Orders.Infra.EntityConfigurations;
 
 namespace Orders.Infra.Database
 {
     public class OrdersDbContext : DbContext, IUnitOfWork
     {
+        public const string DEFAULT_SCHEMA = "orders";
+
         private readonly IMediator _mediator;
 
         private IDbContextTransaction _currentTransaction;
@@ -34,10 +36,7 @@ namespace Orders.Infra.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<OrderAggregateRoot>()
-                .Property(p => p.Items)
-                .HasConversion(v => JsonConvert.SerializeObject(v),
-                               v => JsonConvert.DeserializeObject<IDictionary<string, decimal>>(v));
+            modelBuilder.ApplyConfiguration(new OrderEntityTypeConfiguration());
         }
 
         public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))

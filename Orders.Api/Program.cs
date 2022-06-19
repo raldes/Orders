@@ -13,6 +13,9 @@ using RabbitMQ.Client;
 using Orders.Api.AutofacModules;
 using BuildingBlocks.EventBus.Abstractions;
 using BuildingBlocks.EventBus;
+using Orders.App.IntegrationEvents;
+using System.Data.Common;
+using BuildingBlocks.IntegrationEventLogEF.Services;
 
 var configuration = GetConfiguration();
 
@@ -128,6 +131,11 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
     services.AddScoped(typeof(IEFRepository<>), typeof(EFRepository<>));
+
+    services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
+    sp => (DbConnection c) => new IntegrationEventLogService(c));
+
+    services.AddTransient<IOrderingIntegrationEventService, OrderingIntegrationEventService>();
 
     services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
     {
