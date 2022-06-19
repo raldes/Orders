@@ -5,6 +5,7 @@ using Orders.Domain.Repositories;
 using Orders.Infra.Database.Extensions;
 using Microsoft.EntityFrameworkCore.Storage;
 using Orders.Infra.EntityConfigurations;
+using Orders.Domain.Exceptions;
 
 namespace Orders.Infra.Database
 {
@@ -41,16 +42,24 @@ namespace Orders.Infra.Database
 
         public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Dispatch Domain Events collection. 
-            // 
-            // Right BEFORE committing data (EF SaveChanges) into the DB will make a single transaction including  
-            // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
-            await _mediator.DispatchDomainEventsAsync(this);
+            try
+            {
+                // Commit data (EF SaveChanges) into the DB will make a single transaction including  
+                // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
+                
+                // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
+                // performed through the DbContext will be committed
+                var result = await base.SaveChangesAsync(cancellationToken);
 
-            // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
-            // performed through the DbContext will be committed
-            var result = await base.SaveChangesAsync(cancellationToken);
+                // if save changes is ok: Dispatch Domain Events collection. 
+                await _mediator.DispatchDomainEventsAsync(this);
 
+            }
+            catch (Exception)
+            {
+                throw new CreateOrderDomainException();
+            }
+ 
             return true;
         }
  
