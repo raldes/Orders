@@ -34,6 +34,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BuildingBlocks\EeventBusRabbitMQ\EventBusRabbitMQ.csproj" />
+    <ProjectReference Include="..\BuildingBlocks\EventBus\EventBus.csproj" />
+    <ProjectReference Include="..\EventLogs.Infra\EventLogs.Infra.csproj" />
     <ProjectReference Include="..\Orders.App\Orders.App.csproj" />
     <ProjectReference Include="..\Orders.Domain\Orders.Domain.csproj" />
     <ProjectReference Include="..\Orders.Infra\Orders.Infra.csproj" />

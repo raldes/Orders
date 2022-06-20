@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BuildingBlocks\EventBus\EventBus.csproj" />
     <ProjectReference Include="..\BuildingBlocks\IntegrationEventLogEF\IntegrationEventLogEF\IntegrationEventLogEF.csproj" />
+    <ProjectReference Include="..\EventLogs.Infra\EventLogs.Infra.csproj" />
     <ProjectReference Include="..\Orders.Domain\Orders.Domain.csproj" />
     <ProjectReference Include="..\Orders.Infra\Orders.Infra.csproj" />
   </ItemGroup>

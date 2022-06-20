@@ -1,7 +1,7 @@
 ﻿using BuildingBlocks.EventBus.Abstractions;
 using BuildingBlocks.EventBus.Events;
-using BuildingBlocks.IntegrationEventLogEF;
-using BuildingBlocks.IntegrationEventLogEF.Services;
+using EventLogs.Infra.Database;
+using EventLogs.Infra.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orders.Infra.Database;

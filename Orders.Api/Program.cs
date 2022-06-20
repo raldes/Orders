@@ -15,7 +15,8 @@ using BuildingBlocks.EventBus.Abstractions;
 using BuildingBlocks.EventBus;
 using Orders.App.IntegrationEvents;
 using System.Data.Common;
-using Orders.Infra.EventLogs.Database;
+using EventLogs.Infra.Database;
+using EventLogs.Infra.Services;
 
 var configuration = GetConfiguration();
 
