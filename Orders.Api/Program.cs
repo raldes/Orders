@@ -15,7 +15,7 @@ using BuildingBlocks.EventBus.Abstractions;
 using BuildingBlocks.EventBus;
 using Orders.App.IntegrationEvents;
 using System.Data.Common;
-using BuildingBlocks.IntegrationEventLogEF.Services;
+using Orders.Infra.EventLogs.Database;
 
 var configuration = GetConfiguration();
 
@@ -47,6 +47,13 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var postgresConnectionString = builder.Configuration["PostgreSqlConnectionString"];
 
 builder.Services.AddDbContext<OrdersDbContext>(opt =>
+{
+    opt.UseNpgsql(postgresConnectionString);
+    //opt.UseInMemoryDatabase("itemsdb")/*, ServiceLifetime.Singleton*/;
+    opt.EnableSensitiveDataLogging(true) ;
+});
+
+builder.Services.AddDbContext<IntegrationEventLogContext>(opt =>
 {
     opt.UseNpgsql(postgresConnectionString);
     //opt.UseInMemoryDatabase("itemsdb")/*, ServiceLifetime.Singleton*/;
