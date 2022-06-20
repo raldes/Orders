@@ -1,10 +1,9 @@
 ﻿using BuildingBlocks.EventBus.Abstractions;
 using BuildingBlocks.EventBus.Events;
-using EventLogs.Infra.Database;
-using EventLogs.Infra.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orders.Infra.Database;
+using Orders.Infra.Services;
 using System.Data.Common;
 
 namespace Orders.App.IntegrationEvents;
@@ -19,7 +18,7 @@ public class OrderingIntegrationEventService : IOrderingIntegrationEventService
 
     public OrderingIntegrationEventService(IEventBus eventBus,
         OrdersDbContext orderingContext,
-        IntegrationEventLogContext eventLogContext,
+        OrdersDbContext eventLogContext,
         Func<DbConnection, IIntegrationEventLogService> integrationEventLogServiceFactory,
         ILogger<OrderingIntegrationEventService> logger)
     {

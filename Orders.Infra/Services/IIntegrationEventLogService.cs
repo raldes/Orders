@@ -1,6 +1,8 @@
 ﻿using BuildingBlocks.EventBus.Events;
+using Microsoft.EntityFrameworkCore.Storage;
+using Orders.Infra.EntityConfigurations;
 
-namespace EventLogs.Infra.Services;
+namespace Orders.Infra.Services;
 
 public interface IIntegrationEventLogService
 {

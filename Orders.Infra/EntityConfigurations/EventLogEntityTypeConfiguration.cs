@@ -1,21 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EventLogs.Infra.Database;
+namespace Orders.Infra.EntityConfigurations;
 
-public class IntegrationEventLogContext : DbContext
+class EventLogEntityTypeConfiguration : IEntityTypeConfiguration<IntegrationEventLogEntry>
 {
-    public IntegrationEventLogContext(DbContextOptions<IntegrationEventLogContext> options) : base(options)
-    {
-    }
-
-    public DbSet<IntegrationEventLogEntry> IntegrationEventLogs { get; set; }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        builder.Entity<IntegrationEventLogEntry>(ConfigureIntegrationEventLogEntry);
-    }
-
-    void ConfigureIntegrationEventLogEntry(EntityTypeBuilder<IntegrationEventLogEntry> builder)
+    public void Configure(EntityTypeBuilder<IntegrationEventLogEntry> builder)
     {
         builder.ToTable("IntegrationEventLog");
 
@@ -38,6 +28,5 @@ public class IntegrationEventLogContext : DbContext
 
         builder.Property(e => e.EventTypeName)
             .IsRequired();
-
     }
 }

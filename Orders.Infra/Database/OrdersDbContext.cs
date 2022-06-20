@@ -34,13 +34,16 @@ namespace Orders.Infra.Database
 
 
         public DbSet<OrderAggregateRoot> Orders { get; set; }
+        public DbSet<IntegrationEventLogEntry> IntegrationEventLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new OrderEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new EventLogEntityTypeConfiguration());
         }
+  
 
-        public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
+    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             try
             {

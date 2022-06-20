@@ -1,23 +1,24 @@
 ﻿using BuildingBlocks.EventBus.Events;
-using EventLogs.Infra.Database;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Orders.Infra.Database;
+using Orders.Infra.EntityConfigurations;
+using System.Data.Common;
+using System.Reflection;
 
-namespace EventLogs.Infra.Services;
+namespace Orders.Infra.Services;
 
 public class IntegrationEventLogService : IIntegrationEventLogService, IDisposable
 {
-    private readonly IntegrationEventLogContext _integrationEventLogContext;
+    private readonly OrdersDbContext _integrationEventLogContext;
     private readonly DbConnection _dbConnection;
     private readonly List<Type> _eventTypes;
     private volatile bool _disposedValue;
-
-    public IntegrationEventLogService(DbConnection dbConnection)
+    
+    public IntegrationEventLogService(OrdersDbContext integrationEventLogContext)
     {
-        _dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
-        _integrationEventLogContext = new IntegrationEventLogContext(
-            new DbContextOptionsBuilder<IntegrationEventLogContext>()
-                .UseSqlServer(_dbConnection)
-                .Options);
-
+        _integrationEventLogContext = integrationEventLogContext ?? throw new ArgumentNullException(nameof(integrationEventLogContext));
+ 
         _eventTypes = Assembly.Load(Assembly.GetEntryAssembly().FullName)
             .GetTypes()
             .Where(t => t.Name.EndsWith(nameof(IntegrationEvent)))

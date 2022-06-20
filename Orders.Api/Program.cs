@@ -15,8 +15,7 @@ using BuildingBlocks.EventBus.Abstractions;
 using BuildingBlocks.EventBus;
 using Orders.App.IntegrationEvents;
 using System.Data.Common;
-using EventLogs.Infra.Database;
-using EventLogs.Infra.Services;
+using Orders.Infra.Services;
 
 var configuration = GetConfiguration();
 
@@ -48,13 +47,6 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var postgresConnectionString = builder.Configuration["PostgreSqlConnectionString"];
 
 builder.Services.AddDbContext<OrdersDbContext>(opt =>
-{
-    opt.UseNpgsql(postgresConnectionString);
-    //opt.UseInMemoryDatabase("itemsdb")/*, ServiceLifetime.Singleton*/;
-    opt.EnableSensitiveDataLogging(true) ;
-});
-
-builder.Services.AddDbContext<IntegrationEventLogContext>(opt =>
 {
     opt.UseNpgsql(postgresConnectionString);
     //opt.UseInMemoryDatabase("itemsdb")/*, ServiceLifetime.Singleton*/;
@@ -142,10 +134,9 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
 {
     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-    services.AddScoped(typeof(IEFRepository<>), typeof(EFRepository<>));
+    services.AddScoped<IIntegrationEventLogService, IIntegrationEventLogService>();
 
-    services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
-    sp => (DbConnection c) => new IntegrationEventLogService(c));
+    services.AddScoped(typeof(IEFRepository<>), typeof(EFRepository<>));
 
     services.AddTransient<IOrderingIntegrationEventService, OrderingIntegrationEventService>();
 
