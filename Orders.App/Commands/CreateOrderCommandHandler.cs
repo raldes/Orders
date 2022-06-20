@@ -1,12 +1,7 @@
-﻿using Light.GuardClauses;
-using MassTransit;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
-using Orders.App.IntegrationEvents;
-using Orders.App.IntegrationEvents.Events;
 using Orders.Domain.Commands;
 using Orders.Domain.Entities;
-using Orders.Domain.Events;
 using Orders.Domain.Repositories;
 
 namespace Orders.App.Commands

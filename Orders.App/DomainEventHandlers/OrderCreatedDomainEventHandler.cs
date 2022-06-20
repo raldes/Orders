@@ -14,13 +14,13 @@ namespace Orders.App.DomainEventHandlers
         private readonly ILoggerFactory _logger;
 
         public OrderCreatedDomainEventHandler(
-            ILoggerFactory logger,
-            IOrderingIntegrationEventService orderingIntegrationEventService
+            ILoggerFactory logger
+            //IOrderingIntegrationEventService orderingIntegrationEventService
             )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
+            //_orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
 
         }
 
@@ -31,7 +31,7 @@ namespace Orders.App.DomainEventHandlers
 
             var orderCreatedIntegrationEvent = new OrderCreatedIntegrationEvent(orderCreatedDomainEvent.Id);
 
-            await _orderingIntegrationEventService.AddAndSaveEventAsync(orderCreatedIntegrationEvent);
+            //await _orderingIntegrationEventService.AddAndSaveEventAsync(orderCreatedIntegrationEvent);
         }
     }
 }
