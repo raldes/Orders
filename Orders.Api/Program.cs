@@ -43,9 +43,13 @@ builder.Logging.AddJsonConsole();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+//-------------- Postgres configuration ----------
+var postgresConnectionString = builder.Configuration["PostgreSqlConnectionString"];
+
 builder.Services.AddDbContext<OrdersDbContext>(opt =>
 {
-    opt.UseInMemoryDatabase("itemsdb")/*, ServiceLifetime.Singleton*/;
+    opt.UseNpgsql(postgresConnectionString);
+    //opt.UseInMemoryDatabase("itemsdb")/*, ServiceLifetime.Singleton*/;
     opt.EnableSensitiveDataLogging(true) ;
 });
 
@@ -141,30 +145,35 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
     {
         var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
-        var factory = new ConnectionFactory()
-        {
-            HostName = configuration["EventBusConnection"],
-            DispatchConsumersAsync = true
-        };
+        var strUrl = "";
 
-        if (!string.IsNullOrEmpty(configuration["EventBusPort"]))
-        {
-            var isValid = int.TryParse(configuration["EventBusPort"], out var port);
-            if (isValid)
-            {
-                factory.Port = port;
-            }
-        }
+        var factory = new ConnectionFactory();
+        factory.Uri = new Uri("amqps://wdcworae:TSqbbgwK2If2dnfA_jXzibr_EakMsa1R@goose.rmq2.cloudamqp.com/wdcworae");
 
-        if (!string.IsNullOrEmpty(configuration["EventBusUserName"]))
-        {
-            factory.UserName = configuration["EventBusUserName"];
-        }
+        //var factory = new ConnectionFactory()
+        //{
+        //    HostName = configuration["EventBusConnection"],
+        //    DispatchConsumersAsync = true
+        //};
 
-        if (!string.IsNullOrEmpty(configuration["EventBusPassword"]))
-        {
-            factory.Password = configuration["EventBusPassword"];
-        }
+        //if (!string.IsNullOrEmpty(configuration["EventBusPort"]))
+        //{
+        //    var isValid = int.TryParse(configuration["EventBusPort"], out var port);
+        //    if (isValid)
+        //    {
+        //        factory.Port = port;
+        //    }
+        //}
+
+        //if (!string.IsNullOrEmpty(configuration["EventBusUserName"]))
+        //{
+        //    factory.UserName = configuration["EventBusUserName"];
+        //}
+
+        //if (!string.IsNullOrEmpty(configuration["EventBusPassword"]))
+        //{
+        //    factory.Password = configuration["EventBusPassword"];
+        //}
 
         var retryCount = 5;
         if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))

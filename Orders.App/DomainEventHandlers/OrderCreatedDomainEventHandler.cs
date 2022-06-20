@@ -11,21 +11,21 @@ namespace Orders.App.DomainEventHandlers
     {
         private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
 
-        private readonly IMediator _mediator;
+        //private readonly IMediator _mediator;
 
         private readonly ILoggerFactory _logger;
         //private readonly IBus _bus;
 
         public OrderCreatedDomainEventHandler(
             ILoggerFactory logger,
-            IMediator mediator,
+            //IMediator mediator,
             IOrderingIntegrationEventService orderingIntegrationEventService
             //IBus bus
             )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            //_mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
             _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
 

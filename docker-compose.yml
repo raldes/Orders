@@ -8,6 +8,7 @@ services:
       dockerfile: Orders.Api/Dockerfile
     depends_on:
       - "rabbitmq"
+      - "db"
 
   rabbitmq: # login guest:guest
     image: rabbitmq:3-management
@@ -21,3 +22,19 @@ services:
     - "25672:25672"
     - "15671:15671"
     - "15672:15672"
+
+
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local
+

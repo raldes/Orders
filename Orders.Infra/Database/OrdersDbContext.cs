@@ -11,7 +11,7 @@ namespace Orders.Infra.Database
 {
     public class OrdersDbContext : DbContext, IUnitOfWork
     {
-        public const string DEFAULT_SCHEMA = "orders";
+        public const string DEFAULT_SCHEMA = "public";
 
         private readonly IMediator _mediator;
 
@@ -55,7 +55,7 @@ namespace Orders.Infra.Database
                 await _mediator.DispatchDomainEventsAsync(this);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new CreateOrderDomainException();
             }
