@@ -14,8 +14,6 @@ using Orders.Api.AutofacModules;
 using BuildingBlocks.EventBus.Abstractions;
 using BuildingBlocks.EventBus;
 using Orders.App.IntegrationEvents;
-using System.Data.Common;
-using Orders.Infra.Services;
 using Orders.App.Services;
 
 var configuration = GetConfiguration();
@@ -50,7 +48,6 @@ var postgresConnectionString = builder.Configuration["PostgreSqlConnectionString
 builder.Services.AddDbContext<OrdersDbContext>(opt =>
 {
     opt.UseNpgsql(postgresConnectionString);
-    //opt.UseInMemoryDatabase("itemsdb")/*, ServiceLifetime.Singleton*/;
     opt.EnableSensitiveDataLogging(true) ;
 });
 
@@ -93,7 +90,6 @@ void ConfigureServices(IServiceCollection services)
 
     //custom
     services.AddMediatR(typeof(OrderCreatedDomainEventHandler).Assembly);
-    //services.AddMediatR(Assembly.GetExecutingAssembly());
 
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
