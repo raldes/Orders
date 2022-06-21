@@ -4,6 +4,7 @@ using Orders.App.DomainEventHandlers;
 using MediatR;
 using System.Reflection;
 using Orders.Domain.Commands;
+using Orders.App.Behaviors;
 
 namespace Orders.Api.AutofacModules;
 
@@ -26,5 +27,7 @@ public class MediatorModule : Autofac.Module
             var componentContext = context.Resolve<IComponentContext>();
             return t => { object o; return componentContext.TryResolve(t, out o) ? o : null; };
         });
+
+        builder.RegisterGeneric(typeof(TransactionBehaviour<,>)).As(typeof(IPipelineBehavior<,>));
     }
 }

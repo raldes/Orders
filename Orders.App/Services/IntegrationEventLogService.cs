@@ -1,41 +1,44 @@
 ﻿using BuildingBlocks.EventBus.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Orders.App.IntegrationEvents.Events;
 using Orders.Infra.Database;
 using Orders.Infra.EntityConfigurations;
-using System.Data.Common;
-using System.Reflection;
 
-namespace Orders.Infra.Services;
+namespace Orders.App.Services;
 
 public class IntegrationEventLogService : IIntegrationEventLogService, IDisposable
 {
     private readonly OrdersDbContext _integrationEventLogContext;
-    private readonly DbConnection _dbConnection;
     private readonly List<Type> _eventTypes;
     private volatile bool _disposedValue;
-    
+
+    public IntegrationEventLogService()
+    {
+
+    }
+
     public IntegrationEventLogService(OrdersDbContext integrationEventLogContext)
     {
         _integrationEventLogContext = integrationEventLogContext ?? throw new ArgumentNullException(nameof(integrationEventLogContext));
- 
-        _eventTypes = Assembly.Load(Assembly.GetEntryAssembly().FullName)
-            .GetTypes()
-            .Where(t => t.Name.EndsWith(nameof(IntegrationEvent)))
-            .ToList();
+
+        _eventTypes = new List<Type>();
+        _eventTypes.Add(typeof(OrderCreatedIntegrationEvent));
     }
 
     public async Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId)
     {
         var tid = transactionId.ToString();
 
-        var result = await _integrationEventLogContext.IntegrationEventLogs
+        var entries = await _integrationEventLogContext.IntegrationEventLogs
             .Where(e => e.TransactionId == tid && e.State == EventStateEnum.NotPublished).ToListAsync();
 
-        if (result != null && result.Any())
+        if (entries != null && entries.Any())
         {
-            return result.OrderBy(o => o.CreationTime)
-                .Select(e => e.DeserializeJsonContent(_eventTypes.Find(t => t.Name == e.EventTypeShortName)));
+            var ordered = entries.OrderBy(o => o.CreationTime)
+                    .Select(e => e.DeserializeJsonContent(_eventTypes.Find(t => t.Name == e.EventTypeShortName)));
+
+            return ordered.ToList();
         }
 
         return new List<IntegrationEventLogEntry>();

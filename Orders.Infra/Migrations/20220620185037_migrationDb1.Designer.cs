@@ -12,7 +12,7 @@ using Orders.Infra.Database;
 namespace Orders.Infra.Migrations
 {
     [DbContext(typeof(OrdersDbContext))]
-    [Migration("20220620080350_migrationDb1")]
+    [Migration("20220620185037_migrationDb1")]
     partial class migrationDb1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,38 @@ namespace Orders.Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("orders", "public");
+                });
+
+            modelBuilder.Entity("Orders.Infra.EntityConfigurations.IntegrationEventLogEntry", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EventTypeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TimesSent")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("IntegrationEventLog", (string)null);
                 });
 #pragma warning restore 612, 618
         }

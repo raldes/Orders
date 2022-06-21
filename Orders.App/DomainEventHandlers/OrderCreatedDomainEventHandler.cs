@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using Orders.App.IntegrationEvents;
 using Orders.App.IntegrationEvents.Events;
@@ -14,14 +13,13 @@ namespace Orders.App.DomainEventHandlers
         private readonly ILoggerFactory _logger;
 
         public OrderCreatedDomainEventHandler(
-            ILoggerFactory logger
-            //IOrderingIntegrationEventService orderingIntegrationEventService
+            ILoggerFactory logger,
+            IOrderingIntegrationEventService orderingIntegrationEventService
             )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            //_orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
-
+            _orderingIntegrationEventService = orderingIntegrationEventService ?? throw new ArgumentNullException(nameof(orderingIntegrationEventService));
         }
 
         public async Task Handle(OrderCreatedDomainEvent orderCreatedDomainEvent, CancellationToken cancellationToken)
@@ -31,7 +29,7 @@ namespace Orders.App.DomainEventHandlers
 
             var orderCreatedIntegrationEvent = new OrderCreatedIntegrationEvent(orderCreatedDomainEvent.Id);
 
-            //await _orderingIntegrationEventService.AddAndSaveEventAsync(orderCreatedIntegrationEvent);
+            await _orderingIntegrationEventService.AddAndSaveEventAsync(orderCreatedIntegrationEvent);
         }
     }
 }

@@ -10,11 +10,11 @@ namespace Orders.Api.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private IMediator Mediator { get; }
+        private IMediator _mediator { get; }
 
         public OrdersController(IMediator mediator)
         {
-            this.Mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         [HttpPost]
@@ -30,7 +30,7 @@ namespace Orders.Api.Controllers
 
             try
             {
-                var result = await Mediator.Send(command);
+                var result = await _mediator.Send<bool>(command);
 
                 if (!result)
                 {

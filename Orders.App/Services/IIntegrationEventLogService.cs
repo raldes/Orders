@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using Orders.Infra.EntityConfigurations;
 
-namespace Orders.Infra.Services;
+namespace Orders.App.Services;
 
 public interface IIntegrationEventLogService
 {

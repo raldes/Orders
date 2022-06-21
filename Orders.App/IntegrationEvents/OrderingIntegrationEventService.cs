@@ -2,8 +2,8 @@
 using BuildingBlocks.EventBus.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Orders.App.Services;
 using Orders.Infra.Database;
-using Orders.Infra.Services;
 using System.Data.Common;
 
 namespace Orders.App.IntegrationEvents;

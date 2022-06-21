@@ -16,6 +16,7 @@ using BuildingBlocks.EventBus;
 using Orders.App.IntegrationEvents;
 using System.Data.Common;
 using Orders.Infra.Services;
+using Orders.App.Services;
 
 var configuration = GetConfiguration();
 
@@ -134,7 +135,7 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
 {
     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-    services.AddScoped<IIntegrationEventLogService, IIntegrationEventLogService>();
+    services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
 
     services.AddScoped(typeof(IEFRepository<>), typeof(EFRepository<>));
 
