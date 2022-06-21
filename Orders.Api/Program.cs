@@ -148,32 +148,7 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
         var strUrl = "";
 
         var factory = new ConnectionFactory();
-        factory.Uri = new Uri("amqps://wdcworae:TSqbbgwK2If2dnfA_jXzibr_EakMsa1R@goose.rmq2.cloudamqp.com/wdcworae");
-
-        //var factory = new ConnectionFactory()
-        //{
-        //    HostName = configuration["EventBusConnection"],
-        //    DispatchConsumersAsync = true
-        //};
-
-        //if (!string.IsNullOrEmpty(configuration["EventBusPort"]))
-        //{
-        //    var isValid = int.TryParse(configuration["EventBusPort"], out var port);
-        //    if (isValid)
-        //    {
-        //        factory.Port = port;
-        //    }
-        //}
-
-        //if (!string.IsNullOrEmpty(configuration["EventBusUserName"]))
-        //{
-        //    factory.UserName = configuration["EventBusUserName"];
-        //}
-
-        //if (!string.IsNullOrEmpty(configuration["EventBusPassword"]))
-        //{
-        //    factory.Password = configuration["EventBusPassword"];
-        //}
+        factory.Uri = new Uri(configuration["EventBusEndPoint"]);
 
         var retryCount = 5;
         if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
@@ -185,7 +160,6 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
     });
 
 }
-
 
 
 public partial class Program
