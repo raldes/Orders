@@ -145,8 +145,6 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
     {
         var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
-        var strUrl = "";
-
         var factory = new ConnectionFactory();
         factory.Uri = new Uri(configuration["EventBusEndPoint"]);
 
