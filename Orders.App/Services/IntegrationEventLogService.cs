@@ -22,6 +22,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
     {
         _integrationEventLogContext = integrationEventLogContext ?? throw new ArgumentNullException(nameof(integrationEventLogContext));
 
+        //todo: get integration events list automatically
         _eventTypes = new List<Type>();
         _eventTypes.Add(typeof(OrderCreatedIntegrationEvent));
     }
@@ -51,6 +52,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
         var eventLogEntry = new IntegrationEventLogEntry(@event, transaction.TransactionId);
 
         _integrationEventLogContext.Database.UseTransaction(transaction.GetDbTransaction());
+
         _integrationEventLogContext.IntegrationEventLogs.Add(eventLogEntry);
 
         return _integrationEventLogContext.SaveChangesAsync();
@@ -92,7 +94,6 @@ public class IntegrationEventLogService : IIntegrationEventLogService, IDisposab
             {
                 _integrationEventLogContext?.Dispose();
             }
-
 
             _disposedValue = true;
         }

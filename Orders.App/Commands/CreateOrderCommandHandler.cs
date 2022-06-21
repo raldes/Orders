@@ -22,10 +22,7 @@ namespace Orders.App.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        //todo: create Postgres repo, with migration (rest.appt.providers)
         //pipeline exception and response if exception
-        //rabbit config
-        //docker compose with postgres rabbit
 
         public async Task<bool> Handle(CreateOrderCommand createOrderCommand, CancellationToken cancellationToken)
         {

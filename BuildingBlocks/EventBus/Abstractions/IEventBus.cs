@@ -1,6 +1,4 @@
-﻿using BuildingBlocks.EventBus.Events;
-
-namespace BuildingBlocks.EventBus.Abstractions;
+﻿namespace BuildingBlocks.EventBus.Abstractions;
 
 public interface IEventBus
 {
