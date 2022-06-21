@@ -14,6 +14,20 @@ namespace Orders.Domain.Entities
         {
         }
 
+        public static OrderAggregateRoot CreateOrder(CreateOrderCommand command)
+        {
+            var newOrder = new OrderAggregateRoot(command);
+
+            newOrder.Apply(command);
+
+            var createdOrderEvent = new OrderCreatedDomainEvent(newOrder.Id, newOrder.Items);
+
+            //generate domain event:
+            newOrder.AddDomainEvent(createdOrderEvent);
+
+            return newOrder;
+        }
+
         public OrderAggregateRoot(CreateOrderCommand command)
         {
             this.Apply(command);
@@ -23,7 +37,6 @@ namespace Orders.Domain.Entities
         {
             this.Id = command.Id;
             this.Items = command.Items;
-
         }
     }
 }

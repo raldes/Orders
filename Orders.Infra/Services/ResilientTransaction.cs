@@ -1,4 +1,6 @@
-﻿namespace BuildingBlocks.IntegrationEventLogEF.Utilities;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Orders.Infra.Services;
 
 public class ResilientTransaction
 {

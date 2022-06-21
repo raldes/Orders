@@ -1,4 +1,9 @@
-﻿namespace BuildingBlocks.IntegrationEventLogEF;
+﻿
+using BuildingBlocks.EventBus.Events;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
+
+namespace Orders.Infra.EntityConfigurations;
 
 public class IntegrationEventLogEntry
 {

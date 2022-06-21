@@ -1,4 +1,8 @@
-﻿namespace BuildingBlocks.IntegrationEventLogEF.Services;
+﻿using BuildingBlocks.EventBus.Events;
+using Microsoft.EntityFrameworkCore.Storage;
+using Orders.Infra.EntityConfigurations;
+
+namespace Orders.App.Services;
 
 public interface IIntegrationEventLogService
 {

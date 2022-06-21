@@ -13,6 +13,10 @@ using RabbitMQ.Client;
 using Orders.Api.AutofacModules;
 using BuildingBlocks.EventBus.Abstractions;
 using BuildingBlocks.EventBus;
+using Orders.App.IntegrationEvents;
+using System.Data.Common;
+using Orders.Infra.Services;
+using Orders.App.Services;
 
 var configuration = GetConfiguration();
 
@@ -40,9 +44,13 @@ builder.Logging.AddJsonConsole();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+//-------------- Postgres configuration ----------
+var postgresConnectionString = builder.Configuration["PostgreSqlConnectionString"];
+
 builder.Services.AddDbContext<OrdersDbContext>(opt =>
 {
-    opt.UseInMemoryDatabase("itemsdb")/*, ServiceLifetime.Singleton*/;
+    opt.UseNpgsql(postgresConnectionString);
+    //opt.UseInMemoryDatabase("itemsdb")/*, ServiceLifetime.Singleton*/;
     opt.EnableSensitiveDataLogging(true) ;
 });
 
@@ -127,36 +135,18 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
 {
     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+    services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
+
     services.AddScoped(typeof(IEFRepository<>), typeof(EFRepository<>));
+
+    services.AddTransient<IOrderingIntegrationEventService, OrderingIntegrationEventService>();
 
     services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
     {
         var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
-        var factory = new ConnectionFactory()
-        {
-            HostName = configuration["EventBusConnection"],
-            DispatchConsumersAsync = true
-        };
-
-        if (!string.IsNullOrEmpty(configuration["EventBusPort"]))
-        {
-            var isValid = int.TryParse(configuration["EventBusPort"], out var port);
-            if (isValid)
-            {
-                factory.Port = port;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(configuration["EventBusUserName"]))
-        {
-            factory.UserName = configuration["EventBusUserName"];
-        }
-
-        if (!string.IsNullOrEmpty(configuration["EventBusPassword"]))
-        {
-            factory.Password = configuration["EventBusPassword"];
-        }
+        var factory = new ConnectionFactory();
+        factory.Uri = new Uri(configuration["EventBusEndPoint"]);
 
         var retryCount = 5;
         if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
@@ -168,7 +158,6 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
     });
 
 }
-
 
 
 public partial class Program

@@ -3,13 +3,17 @@ using Orders.Domain.Entities;
 using MediatR;
 using Orders.Domain.Repositories;
 using Orders.Infra.Database.Extensions;
-using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore.Storage;
+using Orders.Infra.EntityConfigurations;
+using Orders.Domain.Exceptions;
+using System.Data;
 
 namespace Orders.Infra.Database
 {
     public class OrdersDbContext : DbContext, IUnitOfWork
     {
+        public const string DEFAULT_SCHEMA = "public";
+
         private readonly IMediator _mediator;
 
         private IDbContextTransaction _currentTransaction;
@@ -31,27 +35,35 @@ namespace Orders.Infra.Database
 
 
         public DbSet<OrderAggregateRoot> Orders { get; set; }
+        public DbSet<IntegrationEventLogEntry> IntegrationEventLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<OrderAggregateRoot>()
-                .Property(p => p.Items)
-                .HasConversion(v => JsonConvert.SerializeObject(v),
-                               v => JsonConvert.DeserializeObject<IDictionary<string, decimal>>(v));
+            modelBuilder.ApplyConfiguration(new OrderEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new EventLogEntityTypeConfiguration());
         }
+  
 
-        public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
+    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Dispatch Domain Events collection. 
-            // 
-            // Right BEFORE committing data (EF SaveChanges) into the DB will make a single transaction including  
-            // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
-            await _mediator.DispatchDomainEventsAsync(this);
+            try
+            {
+                // Commit data (EF SaveChanges) into the DB will make a single transaction including  
+                // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
+                
+                // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
+                // performed through the DbContext will be committed
+                var result = await base.SaveChangesAsync(cancellationToken);
 
-            // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
-            // performed through the DbContext will be committed
-            var result = await base.SaveChangesAsync(cancellationToken);
+                // if save changes is ok: Dispatch Domain Events collection. 
+                await _mediator.DispatchDomainEventsAsync(this);
 
+            }
+            catch (Exception ex)
+            {
+                throw new CreateOrderDomainException();
+            }
+ 
             return true;
         }
  
@@ -80,6 +92,56 @@ namespace Orders.Infra.Database
                 throw;
             }
  
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            if (_currentTransaction != null) return null;
+
+            _currentTransaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+
+            return _currentTransaction;
+        }
+
+        public async Task CommitTransactionAsync(IDbContextTransaction transaction)
+        {
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (transaction != _currentTransaction) throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
+
+            try
+            {
+                await SaveChangesAsync();
+                transaction.Commit();
+            }
+            catch
+            {
+                RollbackTransaction();
+                throw;
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    _currentTransaction.Dispose();
+                    _currentTransaction = null;
+                }
+            }
+        }
+
+        public void RollbackTransaction()
+        {
+            try
+            {
+                _currentTransaction?.Rollback();
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    _currentTransaction.Dispose();
+                    _currentTransaction = null;
+                }
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BuildingBlocks.IntegrationEventLogEF;
+﻿namespace Orders.Infra.EntityConfigurations;
 
 public enum EventStateEnum
 {
