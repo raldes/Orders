@@ -2,19 +2,20 @@
 
 ## Solution
 
-This solution is DDD, CQRS and EventDriven based.
+This solution is DDD, CQRS, and EventDriven based.
 
-- For commands the controller send Commands to CommandHandler methods (in the App layer), using MediatR.
+For commands the controller sends Commands to CommandHandler methods (in the App layer), using MediatR.
 
-- The command handler call de entities methods (in the domain layer) to create the entity.
+The command handler calls de entities methods (in the domain layer) to create the entity.
 
-- Aggregate root: only the entity (in the domain layer) contains the logic to create and modify itself, modify its status and generate DomainEvents related to these modifications.
+Aggregate root: only the entity (in the domain layer) contains the logic to create and modify itself, modify its status and generate DomainEvents related to these modifications.
 
-- The Command handler call repositories to persist the changes. The repository uses UnitOfWorks pattern to persist the changes only if all the db operations where succesfully (transaction mode).
+The Command handler call repositories to persist the changes. The repository uses UnitOfWorks pattern to persist the changes only if all the db operations were successful (transaction mode).
 
-- The DomainEventHandler sends IntegrationEvent to comunicate other services about that event (EventDriven)
+The DomainEventHandler sends IntegrationEvent to communicate other services about that event (EventDriven)
 
-- Any other service could to susbcribe IntegrationEvents to know about these events.
+Any other service could be to subscribe IntegrationEvents to know about these events.
+
 
 ## Projects: 
 
@@ -40,9 +41,9 @@ We can have several approaches for dealing with data and event consistency:
 - Using transaction log mining.
 - Using the Outbox pattern. This is a transactional table to store the integration events (extending the local transaction)."
 
-In the solution we use a balanced approach: a transactional database table and a simplified ES pattern. We have a event state property, the estate “ready to publish the event,” is set in the original event when commit it to the integration events table. Then try to publish the event to the event bus. If the publish-event action succeeds, start another transaction in the origin service and move the state from “ready to publish the event” to “event already published.”
+In the solution, we use a balanced approach: a transactional database table and a simplified ES pattern. We have an event state property, the estate “ready to publish the event,” is set in the original event when committing it to the integration events table. Then try to publish the event on the event bus. If the publish-event action succeeds, start another transaction in the origin service and move the state from “ready to publish the event” to “event already published.”
 
-If the publish-event action in the event bus fails, the data still will not be inconsistent within the origin microservice—it is still marked as “ready to publish the event,” and with respect to the rest of the services, it will eventually be consistent. 
+If the publish-event action in the event bus fails, the data still will not be inconsistent within the origin microservice—it is still marked as “ready to publish the event,” and for the rest of the services, it will eventually be consistent. 
 
 We can always have background jobs checking the state of the transactions or integration events. If the job finds an event in the “ready to publish the event” state, it can try to republish that event to the event bus.
 
@@ -56,7 +57,7 @@ We can always have background jobs checking the state of the transactions or int
 
 ### Resiliance
 
-- DefaultRabbitMQPersistentConnection:  Create Persistent Connection for Rabbit. Uses Polly for retry N attemps.
+- DefaultRabbitMQPersistentConnection:  Create Persistent Connection for Rabbit. Uses Polly for retry N attempts.
 
 ### Postgres Database and RabbitMQ service bus.
 
@@ -66,8 +67,8 @@ We can always have background jobs checking the state of the transactions or int
 
 ### Run the application
 
-The application has a dockerfile for deploy it.
+The application has a docker file for deploying it.
 
-In order to facilitate the application test, we use free online accounts for Postgres database and rabbitMQ service bus. 
+To facilitate the application test, we use free online accounts for Postgres database and rabbitMQ service bus. 
 
-Note: In order to run the application please ask for the credentials and use them in postgres parameters and rabbit endpoint in appsettings.json.
+Note: To run the application please ask for the credentials and use them in Postgres parameters and rabbit endpoint in appsettings.json.
