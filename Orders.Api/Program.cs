@@ -47,7 +47,14 @@ var postgresConnectionString = builder.Configuration["PostgreSqlConnectionString
 
 builder.Services.AddDbContext<OrdersDbContext>(opt =>
 {
-    opt.UseNpgsql(postgresConnectionString);
+    var server = builder.Configuration["POSTGRES_HOST"];
+    var port = builder.Configuration["POSTGRES_PORT"];
+    var dbname = builder.Configuration["POSTGRES_DB"];
+    var user = builder.Configuration["POSTGRES_USER"];
+    var password = builder.Configuration["POSTGRES_PASSWORD"];
+
+    opt.UseNpgsql($"Host={server};Port={port};Database={dbname};Username={user};Password={password}");
+
     opt.EnableSensitiveDataLogging(true);
 });
 
