@@ -45,9 +45,11 @@ In the solution, we use a balanced approach: a transactional database table and 
 
 If the publish-event action in the event bus fails, the data still will not be inconsistent within the origin microservice—it is still marked as “ready to publish the event,” and for the rest of the services, it will eventually be consistent. 
 
-We can always have background jobs checking the state of the transactions or integration events. If the job finds an event in the “ready to publish the event” state, it can try to republish that event to the event bus.
-
 ![Image](/pictures/publish2.png)
+
+We also can have background jobs checking the state of the transactions or integration events. If the job finds an event in the “ready to publish the event” state, it can try to republish that event to the event bus.
+
+![Image](/pictures/publish3.png)
 
 ### Implementing Integration events for sharing events between services.	
 
