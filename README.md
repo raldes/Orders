@@ -47,7 +47,7 @@ If the publish-event action in the event bus fails, the data still will not be i
 
 We can always have background jobs checking the state of the transactions or integration events. If the job finds an event in the “ready to publish the event” state, it can try to republish that event to the event bus.
 
-![Image](.\pictures\publish2.png)
+![Image](\pictures\publish2.png)
 
 ### Implementing Integration events for sharing events between services.	
 
