@@ -201,7 +201,6 @@ namespace Orders.Infra.Repositories
             return _collection.Find(pks);
         }
 
-
         public int SaveChanges()
         {
             int results = 0;
@@ -222,6 +221,5 @@ namespace Orders.Infra.Repositories
 
             return results;
         }
-
     }
 }

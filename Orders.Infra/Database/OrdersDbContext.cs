@@ -21,12 +21,12 @@ namespace Orders.Infra.Database
         public OrdersDbContext(DbContextOptions<OrdersDbContext> options) : base(options)
         {
         }
-       
+
         public OrdersDbContext(DbContextOptions<OrdersDbContext> options, IMediator mediator) : base(options)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
-            System.Diagnostics.Debug.WriteLine("Items DbContext::ctor ->" + this.GetHashCode());
+            System.Diagnostics.Debug.WriteLine("Orders DbContext::ctor ->" + this.GetHashCode());
         }
 
         public IDbContextTransaction GetCurrentTransaction() => _currentTransaction;
@@ -42,15 +42,15 @@ namespace Orders.Infra.Database
             modelBuilder.ApplyConfiguration(new OrderEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new EventLogEntityTypeConfiguration());
         }
-  
 
-    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
+
+        public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             try
             {
                 // Commit data (EF SaveChanges) into the DB will make a single transaction including  
                 // side effects from the domain event handlers which are using the same DbContext with "InstancePerLifetimeScope" or "scoped" lifetime
-                
+
                 // After executing this line all the changes (from the Command Handler and Domain Event Handlers) 
                 // performed through the DbContext will be committed
                 var result = await base.SaveChangesAsync(cancellationToken);
@@ -58,13 +58,12 @@ namespace Orders.Infra.Database
                 // if save changes is ok: Dispatch Domain Events collection. 
                 await _mediator.DispatchDomainEventsAsync(this);
 
+                return true;
             }
             catch (Exception ex)
             {
                 throw new CreateOrderDomainException();
             }
- 
-            return true;
         }
  
         public override int SaveChanges()

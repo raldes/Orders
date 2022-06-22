@@ -1,9 +1,6 @@
 ﻿namespace Orders.Domain.Exceptions;
 
-/// <summary>
-/// Exception type for domain exceptions
-/// </summary>
-public class CreateOrderDomainException : Exception
+public class CreateOrderDomainException : ExceptionBase
 {
     public CreateOrderDomainException()
     { }
