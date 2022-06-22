@@ -2,8 +2,6 @@
 
 ## Solution
 
-- The solution has 6 projects. All projects are .Net 6
-
 This solution is DDD, CQRS and EventDriven based.
 
 - For commands the controller send Commands to CommandHandler methods (in the App layer), using MediatR.
@@ -19,6 +17,8 @@ This solution is DDD, CQRS and EventDriven based.
 - Any other service could to susbcribe IntegrationEvents to know about these events.
 
 ## Projects: 
+
+The solution has 6 projects. All projects are .Net 6
 
 - Orders.Api: Api REST with Swagger
 - Orders.App: Application services (class lib)
@@ -36,14 +36,15 @@ As building blocks:
 "When you publish integration events through a distributed messaging system like your event bus, you have the problem of atomically updating the original database and publishing an event (that is, either both operations complete or none of them)... The CAP theorem says that you cannot build a (distributed) database (or a microservice that owns its model) that is continually available, strongly consistent, and tolerant to any partition. You must choose two of these three properties...In microservices-based architectures, you should choose availability and tolerance, and you should deemphasize strong consistency." 
 
 We can have several approaches for dealing with data and event consistency:
-• Using the full Event Sourcing pattern.
-• Using transaction log mining.
-• Using the Outbox pattern. This is a transactional table to store the integration events (extending the local transaction)."
+- Using the full Event Sourcing pattern.
+- Using transaction log mining.
+- Using the Outbox pattern. This is a transactional table to store the integration events (extending the local transaction)."
 
 In the solution we use a balanced approach: a transactional database table and a simplified ES pattern. We have a event state property, the estate “ready to publish the event,” is set in the original event when commit it to the integration events table. Then try to publish the event to the event bus. If the publish-event action succeeds, start another transaction in the origin service and move the state from “ready to publish the event” to “event already published.”
 
-If the publish-event action in the event bus fails, the data still will not be inconsistent within the origin microservice—it is still marked as “ready to publish the event,” and with respect to the rest of the services, it will eventually be consistent. We can always have background jobs checking the state of the transactions or integration events. If the job finds an event in the “ready to publish the event” state, it can try to republish that event to the event bus.
+If the publish-event action in the event bus fails, the data still will not be inconsistent within the origin microservice—it is still marked as “ready to publish the event,” and with respect to the rest of the services, it will eventually be consistent. 
 
+We can always have background jobs checking the state of the transactions or integration events. If the job finds an event in the “ready to publish the event” state, it can try to republish that event to the event bus.
 
 ### Implementing Integration events for sharing events between services.	
 
