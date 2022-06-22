@@ -1,6 +1,6 @@
 ﻿namespace Orders.Domain.Exceptions;
 
-public class CreateOrderDomainException : Exception
+public class CreateOrderDomainException : ExceptionBase
 {
     public CreateOrderDomainException()
     { }

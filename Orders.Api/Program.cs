@@ -15,6 +15,8 @@ using BuildingBlocks.EventBus.Abstractions;
 using BuildingBlocks.EventBus;
 using Orders.App.IntegrationEvents;
 using Orders.App.Services;
+using Orders.Api.ErrorHandling;
+using Orders.App.Mappers;
 
 var configuration = GetConfiguration();
 
@@ -46,7 +48,7 @@ var postgresConnectionString = builder.Configuration["PostgreSqlConnectionString
 builder.Services.AddDbContext<OrdersDbContext>(opt =>
 {
     opt.UseNpgsql(postgresConnectionString);
-    opt.EnableSensitiveDataLogging(true) ;
+    opt.EnableSensitiveDataLogging(true);
 });
 
 var app = builder.Build();
@@ -63,6 +65,10 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.ConfigureCustomExceptionMiddleware();
+
+InitDatabase();
 
 app.Run();
 
@@ -129,6 +135,8 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
 {
     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+    services.AddSingleton<IHttpStatusCodeMapper, HttpStatusCodeMapper>();
+
     services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
 
     services.AddScoped(typeof(IEFRepository<>), typeof(EFRepository<>));
@@ -150,9 +158,25 @@ void AddCustomIntegrations(IServiceCollection services, IConfiguration configura
 
         return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
     });
-
 }
 
+void InitDatabase()
+{
+    //initialize database
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<OrdersDbContext>();
+            DbInitializer.InitializeContent(context);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while creating the database.");
+        }
+    }
+}
 
 public partial class Program
 {

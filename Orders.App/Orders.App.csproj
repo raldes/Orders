@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <Folder Include="IntegrationEvents\EventHandling\" />
-    <Folder Include="Mapper\" />
     <Folder Include="Queries\" />
     <Folder Include="Validation\" />
   </ItemGroup>
